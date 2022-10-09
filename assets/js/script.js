@@ -71,7 +71,7 @@ function createCalendar() {
 function createRow(hour) {
     // Create a time block row
     var timeRow = $("<tr>").attr({
-        "class": "table-row"
+        "class": "table-row time-row"
     });
 
     // Create a table data element for the time row
@@ -84,10 +84,11 @@ function createRow(hour) {
     // timeField.attr("data-hour", hour);
     // Create a table data element for the event row
     var eventField = $("<td>").attr({
-        "class": "time-block"
+        "class": "time-block table-row"
 
     });
     eventField.attr("data-hour", hour);
+    timeRow.attr("data-hour", hour);
     // Create a textarea element for the event row
     var eventArea = $("<input>").attr({
         "class": "text-area description col-8"
@@ -97,7 +98,7 @@ function createRow(hour) {
     eventArea.on("click", function () {
 
         // If window is small
-        if ($(window).width() < 821) {
+        if ($(window).width() < 768) {
             //Get hour from parent element
             var hour = $(this).parent().attr("data-hour");
             //Call window prompt to get text
@@ -112,39 +113,62 @@ function createRow(hour) {
     });
 
     // Add enter key event listener to the textarea
-    eventArea.on("keyup", function (event) {
-        // Check if the enter key was pressed
-        console.log(event);
-        if (event.key == "Enter") {
-            // Get the value of the textarea
-            var eventText = $(this).val();
-            // Get the hour of the textarea
-            var eventHour = $(this).parent().attr("data-hour");
-            // Save the event to local storage
-            console.log(eventHour + " " + eventText);
-            saveEvent(eventHour, eventText);
-            // Move to the next textarea
-            $(this).parent().next().children().focus();
-            // Move cursor out of textarea
-            $(this).blur();
-        }
-    });
+    // eventArea.on("keyup", function (event) {
+    //     // Check if the enter key was pressed
+    //     console.log(event);
+    //     if (event.key == "Enter") {
+    //         // Get the value of the textarea
+    //         var eventText = $(this).val();
+    //         // Get the hour of the textarea
+    //         var eventHour = $(this).parent().attr("data-hour");
+    //         // Save the event to local storage
+    //         console.log(eventHour + " " + eventText);
+    //         saveEvent(eventHour, eventText);
+    //         // Move to the next textarea
+    //         $(this).parent().next().children().focus();
+    //         // Move cursor out of textarea
+    //         $(this).blur();
+    //     }
+    // });
     // Create a table data element for the save button row
-    // var saveField = $("<div>")
-    //     .attr({
-    //         "class": "col-md-1 saveBtn p-0"
-    //     });
-    // Create a save button element for the save button row
-    // var saveBtn = $("<i class='far fa-save fa-lg'></i>");
-    // Append the timeField, eventField, and saveField to the timeRow
-    // Append the eventArea to the eventField
-    eventField.append(eventArea);
+    var saveField = $("<td>")
+        .attr({
+            "class": "table-cell btn-primary col-1 btn2" // Add the class "save-btn" to the save field
+        });
+    // Create a save button for the save button row
+    var saveBtn = $("<button>")
+        .attr({
+            "class": "btn btn-primary btn2"
+            // Add the class "saveBtn" to the save button
+            // "class": " btn btn-primary save-btn fas fa-save" // Add the class "custom-btn" to the save button
+        });
 
-    timeRow.append(timeField);
-    timeRow.append(eventField);
-    // Append the saveBtn to the saveField
-    // saveField.append(saveBtn);
-    // Return the timeRow
+    // Create italic element for save button
+    var saveIcon = $("<i>").attr({
+        "class": "fas fa-save"
+    });
+    // Append the save button to the save field
+    saveBtn.append(saveIcon);
+
+
+    // var saveBtn = $("<i class='far fa-save fa-lg'></i>");
+    // Add click listener to the save button
+    saveBtn.on("click", function (event) {
+        console.log(event);
+        // Get the value of the textara
+        var eventText = $(this).parent().siblings().children().val();
+    console.log("event"+eventText);
+        // Get the hour of the textarea
+        var eventHour = $(this).parent().parent().attr("data-hour");
+        // Save the event to local storage
+        console.log(eventHour + " event "+eventText);
+        saveEvent(eventHour, eventText);
+    });
+    eventField.append(eventArea);
+    saveField.append(saveBtn);
+    // Append the time field, event field, and save field to the time row
+    timeRow.append(timeField, eventField, saveField);
+    // Append the save button to the save field
     return timeRow;
 }
 
@@ -197,7 +221,7 @@ function createRows() {
         // Create a row for each hour of the work day
         var row = createRow(i);
         console.log("row", row);
-        $(".container").append(row);
+        $(".tbody").append(row);
 
     }
 }
@@ -211,7 +235,7 @@ function saveEvent(hour, text) {
 // Create a function to load any saved events from local storage
 function loadEvents() {
     // Loop over the time blocks
-    $(".time-block").each(function () {
+    $(".time-row").each(function () {
         // Get the hour from the time block
         var blockHour = $(this).attr("data-hour");
         // Get the saved event from local storage
@@ -221,7 +245,7 @@ function loadEvents() {
         // If there is an event in local storage for this hour
         if (eventText !== null) {
             // Set the value of the textarea to the event text
-            $(this).children(".text-area").val(eventText);
+            $(this).children().children(".text-area").val(eventText);
         }
     }
     )
@@ -235,6 +259,14 @@ function init() {
     createCalendar();
     // Get the saved events from local storage
     loadEvents();
+
+    // Add click event to clear button
+    $("#clear").on("click", function () {
+        // Clear the local storage
+        localStorage.clear();
+        // Refresh the page
+        location.reload();
+    });
 }
 
 
