@@ -11,27 +11,21 @@ function timeRow(hour) {
         .addClass("col-1 hour")
         .text(hourText)
         .attr("style", "font-weight: bolder; font-size: 20px; display: flex; align-items: center; justify-content: center");
+    // Load saved data from localStorage
+    var description = localStorage.getItem(hour);
 
     var textAreaEl = $("<textarea>")
-        .addClass("col-11 description col-lg-10")
+        .addClass("col-9 description col-lg-10")
         .attr("aria-label", "description")
         .attr("style", "color: black; font-size: 20px")
+        .text(description);
     // Add aria-label attribute
 
-    var description = localStorage.getItem(hour);
-    if (description) {
-        textAreaEl.val(description);
-        rowEl.attr("style", "opacity: 0.8");
-    }
-
-
     var button = $("<button>")
-        .addClass("col-1 saveBtn d-none d-lg-block")
+        .addClass("col-2 saveBtn col-lg-1")
         .attr("data-hour", hour)
         .attr("aria-label", "save button")
         .attr("style", "font-size: 40px")
-        .attr("data-toggle", "modal")
-        .attr("data-target", "#modal")
 
     button.click(function () {
         // Get dataset hour value
@@ -40,22 +34,7 @@ function timeRow(hour) {
         localStorage.setItem(logTime, logText);
         // alert("Saved!")
         // Call modal dialog
-        var modal = $("#saveModal");
-        console.log(modal);
-        modal.modal("show");
     });
-
-    // Add click event to row element
-    rowEl.click(function () {
-        // Check if the window is small
-        if ($(window).width() < 768) {
-            // Prompt user to input text
-            var text = prompt("Enter Task");
-            if(text){
-                $(this).attr("style", "opacity: 1.0");
-                $(this).children(".description").val(text);
-            }
-    }})
 
     var icon = $("<i>")
         .addClass("fas fa-save");
@@ -100,12 +79,8 @@ function clearButtonRow() {
 
     // Add click event to clear button
     button.click(function () {
-        // Show modal clear dialog
-        var modal = $("#clearModal");
-        console.log(modal);
-        modal.modal("show");
-        // localStorage.clear();
-        // location.reload();
+        localStorage.clear();
+        location.reload();
     })
 
 }
@@ -133,11 +108,6 @@ function init() {
 
     clearButtonRow();
 
-    // Add clearConfirm button click event
-    $("#clearConfirm").click(function () {
-        localStorage.clear();
-        location.reload();
-    });
 
     window.setInterval(function () {
         currentDay();
