@@ -13,27 +13,49 @@ function timeRow(hour) {
         .attr("style", "font-weight: bolder; font-size: 20px; display: flex; align-items: center; justify-content: center");
 
     var textAreaEl = $("<textarea>")
-        .addClass("col-10 description")
+        .addClass("col-11 description col-lg-10")
         .attr("aria-label", "description")
         .attr("style", "color: black; font-size: 20px")
     // Add aria-label attribute
 
     var description = localStorage.getItem(hour);
-    textAreaEl.val(localStorage.getItem(hour));
+    if (description) {
+        textAreaEl.val(description);
+        rowEl.attr("style", "opacity: 0.8");
+    }
+
 
     var button = $("<button>")
-        .addClass("col-1 saveBtn")
+        .addClass("col-1 saveBtn d-none d-lg-block")
         .attr("data-hour", hour)
         .attr("aria-label", "save button")
-        .attr("style", "font-size: 40px");
+        .attr("style", "font-size: 40px")
+        .attr("data-toggle", "modal")
+        .attr("data-target", "#modal")
 
     button.click(function () {
         // Get dataset hour value
         var logTime = $(this).attr("data-hour");
         var logText = $(this).siblings(".description").val();
         localStorage.setItem(logTime, logText);
-        alert("Saved!")
+        // alert("Saved!")
+        // Call modal dialog
+        var modal = $("#saveModal");
+        console.log(modal);
+        modal.modal("show");
     });
+
+    // Add click event to row element
+    rowEl.click(function () {
+        // Check if the window is small
+        if ($(window).width() < 768) {
+            // Prompt user to input text
+            var text = prompt("Enter Task");
+            if(text){
+                $(this).attr("style", "opacity: 1.0");
+                $(this).children(".description").val(text);
+            }
+    }})
 
     var icon = $("<i>")
         .addClass("fas fa-save");
@@ -67,7 +89,7 @@ function clearButtonRow() {
         .addClass("row justify-content-center");
 
     var button = $("<button>")
-        .addClass("col-1 btn border border-dashed")
+        .addClass("col-4 btn border border-dark")
         .attr("aria-label", "clear button");
 
     var icon = $("<i>").addClass("fas fa-trash-alt");
@@ -78,9 +100,25 @@ function clearButtonRow() {
 
     // Add click event to clear button
     button.click(function () {
-        localStorage.clear();
-        location.reload();
-    });
+        // Show modal clear dialog
+        var modal = $("#clearModal");
+        console.log(modal);
+        modal.modal("show");
+        // localStorage.clear();
+        // location.reload();
+    })
+
+}
+
+// Function for setting currentDay text with current date and time
+function currentDay() {
+    // current date
+    var currentDay = moment().format("MMMM Do YYYY");
+    // current time
+    var currentTime = moment().format("h:mm:ss a");
+
+    $("#currentDay").text(currentDay);
+    $("#currentTime").text(currentTime);
 }
 
 // Add init function
@@ -95,9 +133,14 @@ function init() {
 
     clearButtonRow();
 
-    window.setInterval(function () {
+    // Add clearConfirm button click event
+    $("#clearConfirm").click(function () {
+        localStorage.clear();
+        location.reload();
+    });
 
-        $("#currentDay").text(moment().format("MMMM Do YYYY, h:mm:ss a"));
+    window.setInterval(function () {
+        currentDay();
 
         $(".time-block").each(function () {
             updateRow($(this));
