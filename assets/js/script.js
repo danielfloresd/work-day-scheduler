@@ -32,7 +32,7 @@ function timeRow(hour) {
         var logTime = $(this).attr("data-hour");
         var logText = $(this).siblings(".description").val();
         localStorage.setItem(logTime, logText);
-        // alert("Saved!")
+        alert("Saved!")
         // Call modal dialog
     });
 
@@ -64,7 +64,6 @@ function updateRow(row) {
 // Create clear button row function
 function clearButtonRow() {
     var rowEl = $("<div>")
-        // .addClass("d-grid d-flex justify-content-end")
         .addClass("row justify-content-center");
 
     var button = $("<button>")
