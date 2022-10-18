@@ -16,7 +16,7 @@ Respository can be accessed at https://github.com/danielfloresd/work-day-schedul
 ## Usage
 To view the website, please visit https://danielfloresd.github.io/work-day-scheduler/
 
-<img src="./assets/workdayscheduler.PNG" width="300" />
+<img src="./assets/work-day-scheduler.PNG" width="300" />
 
 ## Credits
 
